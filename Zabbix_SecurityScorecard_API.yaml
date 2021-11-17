@@ -1,0 +1,1939 @@
+zabbix_export:
+  version: '5.4'
+  date: '2021-11-17T20:31:13Z'
+  groups:
+    -
+      uuid: c1042abaca9d435ca00326c24768d8b8
+      name: 'API Providers'
+  templates:
+    -
+      uuid: a21c841cec6046e3b4245fd2ebabab5b
+      template: 'Security Scorecard API'
+      name: 'Security Scorecard API'
+      description: 'Security Scorecard API Provider'
+      groups:
+        -
+          name: 'API Providers'
+      items:
+        -
+          uuid: 2ca7db241b9744f99882864724fc4ef5
+          name: 'Security Scorecard Competitor Count'
+          type: DEPENDENT
+          key: securityscorecard.api.portfolio.competitor.count
+          delay: '0'
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.total
+          master_item:
+            key: securityscorecard.api.portfolio.competitor.data
+          tags:
+            -
+              tag: SecurityScorecard
+              value: Competitor
+            -
+              tag: SecurityScorecard
+              value: Count
+        -
+          uuid: 5f318a94dad342eaa827a3522944ce6d
+          name: securityscorecard.api.portfolio.competitor.data
+          type: HTTP_AGENT
+          key: securityscorecard.api.portfolio.competitor.data
+          delay: 1h
+          history: 1d
+          trends: '0'
+          value_type: TEXT
+          url: '{$SECURITYSCORECARD_URI}/portfolios/{$SECURITYSCORECARD_PORTFOILIO_MONITOR_COMPETITOR}/companies'
+          headers:
+            -
+              name: Accept
+              value: 'application/json; charset=utf-8'
+            -
+              name: Authorization
+              value: 'Token {$SECURITYSCORECARD_API}'
+          tags:
+            -
+              tag: SecurityScorecard
+              value: Competitor
+            -
+              tag: SecurityScorecard
+              value: data
+        -
+          uuid: b7ef737e29644f7c9423833e31a4ce89
+          name: 'Security Scorecard Competitor Score Average'
+          type: CALCULATED
+          key: securityscorecard.api.portfolio.competitor.score.avg
+          delay: 1h
+          params: 'avg(last_foreach(//securityscorecard.api.portfolio.competitor.score[*]))'
+          tags:
+            -
+              tag: SecurityScorecard
+              value: AverageScore
+            -
+              tag: SecurityScorecard
+              value: Competitor
+        -
+          uuid: 82f1f2fc2b564b1892b12f9cfd1c346d
+          name: 'Security Scorecard Competitor Score Average Change'
+          type: CALCULATED
+          key: securityscorecard.api.portfolio.competitor.score.avg.change
+          delay: 1h
+          params: 'avg(last_foreach(//securityscorecard.api.portfolio.competitor.score[*]))'
+          preprocessing:
+            -
+              type: SIMPLE_CHANGE
+              parameters:
+                - ''
+          tags:
+            -
+              tag: SecurityScorecard
+              value: AverageScore
+            -
+              tag: SecurityScorecard
+              value: Change
+            -
+              tag: SecurityScorecard
+              value: Competitor
+        -
+          uuid: 1ccda36f78b24611aac460c1f02f6234
+          name: 'Security Scorecard Portolios Count'
+          type: DEPENDENT
+          key: securityscorecard.api.portfolio.count
+          delay: '0'
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.total
+          master_item:
+            key: securityscorecard.api.portfolios.data
+          tags:
+            -
+              tag: SecurityScorecard
+              value: Count
+            -
+              tag: SecurityScorecard
+              value: Portfolios
+        -
+          uuid: 08a2b470ec2e404db972da93eaab72c5
+          name: 'Security Scorecard Prmary Count'
+          type: DEPENDENT
+          key: securityscorecard.api.portfolio.primary.count
+          delay: '0'
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.total
+          master_item:
+            key: securityscorecard.api.portfolio.primary.data
+          tags:
+            -
+              tag: SecurityScorecard
+              value: Count
+            -
+              tag: SecurityScorecard
+              value: Primary
+        -
+          uuid: 144edc86f68541e2b39f2d0bfeeaa82d
+          name: securityscorecard.api.portfolio.primary.data
+          type: HTTP_AGENT
+          key: securityscorecard.api.portfolio.primary.data
+          delay: 1h
+          history: 1d
+          trends: '0'
+          value_type: TEXT
+          url: '{$SECURITYSCORECARD_URI}/portfolios/{$SECURITYSCORECARD_PORTFOILIO_MONITOR_PRIMARY}/companies'
+          headers:
+            -
+              name: Accept
+              value: 'application/json; charset=utf-8'
+            -
+              name: Authorization
+              value: 'Token {$SECURITYSCORECARD_API}'
+          tags:
+            -
+              tag: SecurityScorecard
+              value: data
+            -
+              tag: SecurityScorecard
+              value: Primary
+        -
+          uuid: ce1f5ad8e88c427f89a31ebd7412a1d4
+          name: 'Security Scorecard Primary Score Average'
+          type: CALCULATED
+          key: securityscorecard.api.portfolio.primary.score.avg
+          delay: 1h
+          params: 'avg(last_foreach(//securityscorecard.api.portfolio.primary.score[*]))'
+          tags:
+            -
+              tag: SecurityScorecard
+              value: AverageScore
+            -
+              tag: SecurityScorecard
+              value: Primary
+          triggers:
+            -
+              uuid: 24664afa1d804ac5a29f9ef469534cf7
+              expression: 'last(/Security Scorecard API/securityscorecard.api.portfolio.primary.score.avg)<{$SECURITYSCORECARD_PRIMARY_AVG_ALERT}'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'last(/Security Scorecard API/securityscorecard.api.portfolio.primary.score.avg)>={$SECURITYSCORECARD_PRIMARY_AVG_ALERT}'
+              name: 'Security Scorecard Primary Score Average Below Threshold ({ITEM.LASTVALUE1} < {$SECURITYSCORECARD_PRIMARY_AVG_ALERT})'
+              opdata: '{ITEM.LASTVALUE1}'
+              priority: WARNING
+        -
+          uuid: 7c7fa1655289457aa1f6827eb32eb5e5
+          name: 'Security Scorecard Primary Score Average Change'
+          type: CALCULATED
+          key: securityscorecard.api.portfolio.primary.score.avg.change
+          delay: 1h
+          params: 'avg(last_foreach(//securityscorecard.api.portfolio.primary.score[*]))'
+          preprocessing:
+            -
+              type: SIMPLE_CHANGE
+              parameters:
+                - ''
+          tags:
+            -
+              tag: SecurityScorecard
+              value: AverageScore
+            -
+              tag: SecurityScorecard
+              value: Change
+            -
+              tag: SecurityScorecard
+              value: Primary
+        -
+          uuid: 08a3f65dd3dc42c9ba387ca5b70398c8
+          name: 'Primary Scorecard Average Score vs Competitor Scorecard Average Score'
+          type: CALCULATED
+          key: securityscorecard.api.portfolio.primary.score.avg.prcntof.competitor
+          delay: 1h
+          units: '%'
+          params: '100*(last(//securityscorecard.api.portfolio.primary.score.avg))  /( last(//securityscorecard.api.portfolio.competitor.score.avg))'
+          tags:
+            -
+              tag: SecurityScorecard
+              value: Competitor
+            -
+              tag: SecurityScorecard
+              value: Primary
+          triggers:
+            -
+              uuid: 8b81977c8c28422da5d8f4186eb222f7
+              expression: 'last(/Security Scorecard API/securityscorecard.api.portfolio.primary.score.avg.prcntof.competitor)<{$SECURITYSCORECARD_PRIMARY_PRCNT_COMP}'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'last(/Security Scorecard API/securityscorecard.api.portfolio.primary.score.avg.prcntof.competitor)<={$SECURITYSCORECARD_PRIMARY_PRCNT_COMP}'
+              name: 'Security Scorecard Primary Perecent of Competitor Dropped Below Threshold ( {ITEM.LASTVALUE1}< {$SECURITYSCORECARD_PRIMARY_PRCNT_COMP})'
+              opdata: '{ITEM.LASTVALUE1}'
+              priority: INFO
+        -
+          uuid: f4b60fcf81e94ef892bfc9e310a41056
+          name: 'Primary Scorecard Average Score vs Competitor Scorecard Average Score Chnage'
+          type: CALCULATED
+          key: securityscorecard.api.portfolio.primary.score.avg.prcntof.competitor.change
+          delay: 1h
+          units: '%'
+          params: '100*(last(//securityscorecard.api.portfolio.primary.score.avg))  /( last(//securityscorecard.api.portfolio.competitor.score.avg))'
+          preprocessing:
+            -
+              type: SIMPLE_CHANGE
+              parameters:
+                - ''
+          tags:
+            -
+              tag: SecurityScorecard
+              value: Change
+            -
+              tag: SecurityScorecard
+              value: Competitor
+            -
+              tag: SecurityScorecard
+              value: Primary
+          triggers:
+            -
+              uuid: b2a26b5bbd7240ca9939a7fdc96b0d8f
+              expression: 'last(/Security Scorecard API/securityscorecard.api.portfolio.primary.score.avg.prcntof.competitor.change)<0'
+              name: 'Security Scorecard Primary Average Score Dropped ({ITEM.LASTVALUE1})'
+              opdata: '{ITEM.LASTVALUE1}'
+              priority: INFO
+              manual_close: 'YES'
+            -
+              uuid: efd1ba400af64655b9be9a5723d38883
+              expression: 'last(/Security Scorecard API/securityscorecard.api.portfolio.primary.score.avg.prcntof.competitor.change)<={$SECURITYSCORECARD_PRIMARY_AVG_SCORE_DROP}'
+              name: 'Security Scorecard Primary Average Score Dropped More than Threshold ({ITEM.LASTVALUE1} <= {$SECURITYSCORECARD_PRIMARY_AVG_SCORE_DROP}'
+              opdata: '{ITEM.LASTVALUE1}'
+              priority: WARNING
+              manual_close: 'YES'
+        -
+          uuid: 2335d410f34e490daf93333739804a0f
+          name: 'Security Scorecard Vendor Count'
+          type: DEPENDENT
+          key: securityscorecard.api.portfolio.vendor.count
+          delay: '0'
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.total
+          master_item:
+            key: securityscorecard.api.portfolio.vendor.data
+          tags:
+            -
+              tag: SecurityScorecard
+              value: Count
+            -
+              tag: SecurityScorecard
+              value: Vendor
+        -
+          uuid: c8a8396703c0492897d29e7630094ca9
+          name: securityscorecard.api.portfolio.vendor.data
+          type: HTTP_AGENT
+          key: securityscorecard.api.portfolio.vendor.data
+          delay: 1h
+          history: 1d
+          trends: '0'
+          value_type: TEXT
+          url: '{$SECURITYSCORECARD_URI}/portfolios/{$SECURITYSCORECARD_PORTFOILIO_MONITOR_VENDOR}/companies'
+          headers:
+            -
+              name: Accept
+              value: 'application/json; charset=utf-8'
+            -
+              name: Authorization
+              value: 'Token {$SECURITYSCORECARD_API}'
+          tags:
+            -
+              tag: SecurityScorecard
+              value: data
+            -
+              tag: SecurityScorecard
+              value: Vendor
+        -
+          uuid: 47016cc47336479ba91b3c8a1a9b8c20
+          name: 'Security Scorecard Vendor Score Average'
+          type: CALCULATED
+          key: securityscorecard.api.portfolio.vendor.score.avg
+          delay: 1h
+          params: 'avg(last_foreach(//securityscorecard.api.portfolio.vendor.score[*]))'
+          tags:
+            -
+              tag: SecurityScorecard
+              value: AverageScore
+            -
+              tag: SecurityScorecard
+              value: Vendor
+        -
+          uuid: 10a03a66bc484534842c2c21e80aed21
+          name: 'Security Scorecard Vendor Score Average Change'
+          type: CALCULATED
+          key: securityscorecard.api.portfolio.vendor.score.avg.change
+          delay: 1h
+          params: 'avg(last_foreach(//securityscorecard.api.portfolio.vendor.score[*]))'
+          preprocessing:
+            -
+              type: SIMPLE_CHANGE
+              parameters:
+                - ''
+          tags:
+            -
+              tag: SecurityScorecard
+              value: AverageScore
+            -
+              tag: SecurityScorecard
+              value: Change
+            -
+              tag: SecurityScorecard
+              value: Vendor
+        -
+          uuid: 056873e219544dd5ad0726ee4a1e27aa
+          name: securityscorecard.api.portfolios.data
+          type: HTTP_AGENT
+          key: securityscorecard.api.portfolios.data
+          delay: 1h
+          history: 1d
+          trends: '0'
+          value_type: TEXT
+          url: '{$SECURITYSCORECARD_URI}/portfolios'
+          headers:
+            -
+              name: Accept
+              value: 'application/json; charset=utf-8'
+            -
+              name: Authorization
+              value: 'Token {$SECURITYSCORECARD_API}'
+          tags:
+            -
+              tag: SecurityScorecard
+              value: data
+      discovery_rules:
+        -
+          uuid: d8a251322e14425b89ff635eb7afb4c0
+          name: securityscorecard.api.portfolio.competitor.discovery
+          type: DEPENDENT
+          key: securityscorecard.api.portfolio.competitor.discovery
+          delay: '0'
+          item_prototypes:
+            -
+              uuid: 88254341a5b542e9b97e84605184abba
+              name: 'Competitor Scorecard - {#COMP_NAME} Domain'
+              type: DEPENDENT
+              key: 'securityscorecard.api.portfolio.competitor.domain[{#COMP_DOM}]'
+              delay: '0'
+              trends: '0'
+              value_type: TEXT
+              preprocessing:
+                -
+                  type: JSONPATH
+                  parameters:
+                    - $.entries
+                -
+                  type: JSONPATH
+                  parameters:
+                    - '$[?(@.["domain"] == ''{#COMP_DOM}'')].["domain"].first()'
+              master_item:
+                key: securityscorecard.api.portfolio.competitor.data
+              tags:
+                -
+                  tag: SecurityScorecard
+                  value: Competitor
+                -
+                  tag: SecurityScorecard
+                  value: Domain
+            -
+              uuid: 7a18a2e701994033855938d7b70cf126
+              name: 'Competitor Scorecard - {#COMP_NAME} Grade'
+              type: DEPENDENT
+              key: 'securityscorecard.api.portfolio.competitor.grade[{#COMP_DOM}]'
+              delay: '0'
+              trends: '0'
+              value_type: TEXT
+              preprocessing:
+                -
+                  type: JSONPATH
+                  parameters:
+                    - $.entries
+                -
+                  type: JSONPATH
+                  parameters:
+                    - '$[?(@.["domain"] == ''{#COMP_DOM}'')].["grade"].first()'
+              master_item:
+                key: securityscorecard.api.portfolio.competitor.data
+              tags:
+                -
+                  tag: SecurityScorecard
+                  value: Competitor
+                -
+                  tag: SecurityScorecard
+                  value: Grade
+            -
+              uuid: 0daa797b80b7465599097745416afad7
+              name: 'Competitor Scorecard - {#COMP_NAME} Industry'
+              type: DEPENDENT
+              key: 'securityscorecard.api.portfolio.competitor.industry[{#COMP_DOM}]'
+              delay: '0'
+              trends: '0'
+              value_type: TEXT
+              preprocessing:
+                -
+                  type: JSONPATH
+                  parameters:
+                    - $.entries
+                -
+                  type: JSONPATH
+                  parameters:
+                    - '$[?(@.["domain"] == ''{#COMP_DOM}'')].["industry"].first()'
+              master_item:
+                key: securityscorecard.api.portfolio.competitor.data
+              tags:
+                -
+                  tag: SecurityScorecard
+                  value: Competitor
+            -
+              uuid: 4959aec9af324d858842c2a56a64bf45
+              name: 'Competitor Scorecard - {#COMP_NAME} Score Change'
+              type: DEPENDENT
+              key: 'securityscorecard.api.portfolio.competitor.score.change[{#COMP_DOM}]'
+              delay: '0'
+              preprocessing:
+                -
+                  type: JSONPATH
+                  parameters:
+                    - $.entries
+                -
+                  type: JSONPATH
+                  parameters:
+                    - '$[?(@.["domain"] == ''{#COMP_DOM}'')].["score"].first()'
+                -
+                  type: SIMPLE_CHANGE
+                  parameters:
+                    - ''
+              master_item:
+                key: securityscorecard.api.portfolio.competitor.data
+              tags:
+                -
+                  tag: SecurityScorecard
+                  value: Change
+                -
+                  tag: SecurityScorecard
+                  value: Competitor
+                -
+                  tag: SecurityScorecard
+                  value: Score
+            -
+              uuid: 681ec4bed2894d539af340866ff3f897
+              name: 'Competitor Scorecard - {#COMP_NAME} Score'
+              type: DEPENDENT
+              key: 'securityscorecard.api.portfolio.competitor.score[{#COMP_DOM}]'
+              delay: '0'
+              preprocessing:
+                -
+                  type: JSONPATH
+                  parameters:
+                    - $.entries
+                -
+                  type: JSONPATH
+                  parameters:
+                    - '$[?(@.["domain"] == ''{#COMP_DOM}'')].["score"].first()'
+              master_item:
+                key: securityscorecard.api.portfolio.competitor.data
+              tags:
+                -
+                  tag: SecurityScorecard
+                  value: Competitor
+                -
+                  tag: SecurityScorecard
+                  value: Score
+            -
+              uuid: f5f77753135b4eb8a95c25e9680f85fd
+              name: 'Competitor Scorecard - {#COMP_NAME} Services - Cloud Provider'
+              type: DEPENDENT
+              key: 'securityscorecard.api.portfolio.competitor.service.cloud[{#COMP_DOM}]'
+              delay: '0'
+              trends: '0'
+              value_type: TEXT
+              preprocessing:
+                -
+                  type: JSONPATH
+                  parameters:
+                    - $.entries
+                -
+                  type: JSONPATH
+                  parameters:
+                    - '$[?(@.["categories"] =~ ''cloud'')].["vendor_domain"].first()'
+              master_item:
+                key: 'securityscorecard.api.portfolio.competitor.services.data[{#COMP_DOM}]'
+              tags:
+                -
+                  tag: SecurityScorecard
+                  value: Competitor
+                -
+                  tag: SecurityScorecard
+                  value: Services
+            -
+              uuid: 153b413e7f8641b8940e9945b62c0c70
+              name: 'Competitor Scorecard - {#COMP_NAME} Services - Mail Provider'
+              type: DEPENDENT
+              key: 'securityscorecard.api.portfolio.competitor.service.mail[{#COMP_DOM}]'
+              delay: '0'
+              trends: '0'
+              value_type: TEXT
+              preprocessing:
+                -
+                  type: JSONPATH
+                  parameters:
+                    - $.entries
+                -
+                  type: JSONPATH
+                  parameters:
+                    - '$[?(@.["categories"] =~ ''mail'')].["vendor_domain"].first()'
+              master_item:
+                key: 'securityscorecard.api.portfolio.competitor.services.data[{#COMP_DOM}]'
+              tags:
+                -
+                  tag: SecurityScorecard
+                  value: Competitor
+                -
+                  tag: SecurityScorecard
+                  value: Services
+            -
+              uuid: f3de291f2bbc421ebdcabd0b84866496
+              name: 'Competitor Scorecard - {#COMP_NAME} Services - NS Provider'
+              type: DEPENDENT
+              key: 'securityscorecard.api.portfolio.competitor.service.ns[{#COMP_DOM}]'
+              delay: '0'
+              trends: '0'
+              value_type: TEXT
+              preprocessing:
+                -
+                  type: JSONPATH
+                  parameters:
+                    - $.entries
+                -
+                  type: JSONPATH
+                  parameters:
+                    - '$[?(@.["categories"] =~ ''name'')].["vendor_domain"].first()'
+              master_item:
+                key: 'securityscorecard.api.portfolio.competitor.services.data[{#COMP_DOM}]'
+              tags:
+                -
+                  tag: SecurityScorecard
+                  value: Competitor
+                -
+                  tag: SecurityScorecard
+                  value: Services
+            -
+              uuid: 9ab27643738d485c80ab2c4893031be1
+              name: 'Competitor Scorecard - {#COMP_NAME} Services - Registrar'
+              type: DEPENDENT
+              key: 'securityscorecard.api.portfolio.competitor.service.registar[{#COMP_DOM}]'
+              delay: '0'
+              trends: '0'
+              value_type: TEXT
+              preprocessing:
+                -
+                  type: JSONPATH
+                  parameters:
+                    - $.entries
+                -
+                  type: JSONPATH
+                  parameters:
+                    - '$[?(@.["categories"] =~ ''registrar'')].["vendor_domain"].first()'
+              master_item:
+                key: 'securityscorecard.api.portfolio.competitor.services.data[{#COMP_DOM}]'
+              tags:
+                -
+                  tag: SecurityScorecard
+                  value: Competitor
+                -
+                  tag: SecurityScorecard
+                  value: Services
+            -
+              uuid: 600903a4944a413d9c63e61c652b0daf
+              name: 'securityscorecard.api.portfolio.competitor.services.data[{#COMP_DOM}]'
+              type: HTTP_AGENT
+              key: 'securityscorecard.api.portfolio.competitor.services.data[{#COMP_DOM}]'
+              delay: 1h
+              history: 1d
+              trends: '0'
+              value_type: TEXT
+              url: '{$SECURITYSCORECARD_URI}/companies/{#COMP_DOM}/services'
+              headers:
+                -
+                  name: Accept
+                  value: 'application/json; charset=utf-8'
+                -
+                  name: Authorization
+                  value: 'Token {$SECURITYSCORECARD_API}'
+              tags:
+                -
+                  tag: SecurityScorecard
+                  value: Competitor
+                -
+                  tag: SecurityScorecard
+                  value: data
+                -
+                  tag: SecurityScorecard
+                  value: Services
+            -
+              uuid: b5037c57d8db49d2aa35d3dddbea8b4e
+              name: 'Competitor Scorecard - {#COMP_NAME} Size'
+              type: DEPENDENT
+              key: 'securityscorecard.api.portfolio.competitor.size[{#COMP_DOM}]'
+              delay: '0'
+              trends: '0'
+              value_type: TEXT
+              preprocessing:
+                -
+                  type: JSONPATH
+                  parameters:
+                    - $.entries
+                -
+                  type: JSONPATH
+                  parameters:
+                    - '$[?(@.["domain"] == ''{#COMP_DOM}'')].["size"].first()'
+              master_item:
+                key: securityscorecard.api.portfolio.competitor.data
+              tags:
+                -
+                  tag: SecurityScorecard
+                  value: Competitor
+          graph_prototypes:
+            -
+              uuid: 33b630a8380e44ceb6666ea57b4d378a
+              name: 'Competitor Scorecard - {#COMP_NAME} Score'
+              ymin_type_1: FIXED
+              ymax_type_1: FIXED
+              graph_items:
+                -
+                  sortorder: '1'
+                  color: 1A7C11
+                  item:
+                    host: 'Security Scorecard API'
+                    key: 'securityscorecard.api.portfolio.competitor.score[{#COMP_DOM}]'
+                -
+                  sortorder: '2'
+                  color: F63100
+                  item:
+                    host: 'Security Scorecard API'
+                    key: securityscorecard.api.portfolio.competitor.score.avg
+          master_item:
+            key: securityscorecard.api.portfolio.competitor.data
+          preprocessing:
+            -
+              type: STR_REPLACE
+              parameters:
+                - '"entries":'
+                - '"data":'
+            -
+              type: STR_REPLACE
+              parameters:
+                - '"domain"'
+                - '"{#COMP_DOM}"'
+            -
+              type: STR_REPLACE
+              parameters:
+                - '"name"'
+                - '"{#COMP_NAME}"'
+        -
+          uuid: 5c0d5a554af54524bd4e651ca658df78
+          name: securityscorecard.api.portfolio.primary.discovery
+          type: DEPENDENT
+          key: securityscorecard.api.portfolio.primary.discovery
+          delay: '0'
+          item_prototypes:
+            -
+              uuid: 6ad2f390f9f748bcb5dca60028d17f17
+              name: 'Primary Scorecard - {#COMP_NAME} Domain'
+              type: DEPENDENT
+              key: 'securityscorecard.api.portfolio.primary.domain[{#COMP_DOM}]'
+              delay: '0'
+              trends: '0'
+              value_type: TEXT
+              preprocessing:
+                -
+                  type: JSONPATH
+                  parameters:
+                    - $.entries
+                -
+                  type: JSONPATH
+                  parameters:
+                    - '$[?(@.["domain"] == ''{#COMP_DOM}'')].["domain"].first()'
+              master_item:
+                key: securityscorecard.api.portfolio.primary.data
+              tags:
+                -
+                  tag: SecurityScorecard
+                  value: Domain
+                -
+                  tag: SecurityScorecard
+                  value: Primary
+            -
+              uuid: 356edce6b91a4d8da86a180bde6fc82f
+              name: 'Primary Scorecard - {#COMP_NAME} Grade'
+              type: DEPENDENT
+              key: 'securityscorecard.api.portfolio.primary.grade[{#COMP_DOM}]'
+              delay: '0'
+              trends: '0'
+              value_type: TEXT
+              preprocessing:
+                -
+                  type: JSONPATH
+                  parameters:
+                    - $.entries
+                -
+                  type: JSONPATH
+                  parameters:
+                    - '$[?(@.["domain"] == ''{#COMP_DOM}'')].["grade"].first()'
+              master_item:
+                key: securityscorecard.api.portfolio.primary.data
+              tags:
+                -
+                  tag: SecurityScorecard
+                  value: Grade
+                -
+                  tag: SecurityScorecard
+                  value: Primary
+            -
+              uuid: ce5601391bee4b36ba6a1811cab95e85
+              name: 'Primary Scorecard - {#COMP_NAME} Industry'
+              type: DEPENDENT
+              key: 'securityscorecard.api.portfolio.primary.industry[{#COMP_DOM}]'
+              delay: '0'
+              trends: '0'
+              value_type: TEXT
+              preprocessing:
+                -
+                  type: JSONPATH
+                  parameters:
+                    - $.entries
+                -
+                  type: JSONPATH
+                  parameters:
+                    - '$[?(@.["domain"] == ''{#COMP_DOM}'')].["industry"].first()'
+              master_item:
+                key: securityscorecard.api.portfolio.primary.data
+              tags:
+                -
+                  tag: SecurityScorecard
+                  value: Primary
+            -
+              uuid: 0e016abeca4c443dbd836bd724dc50f4
+              name: 'Primary Scorecard - {#COMP_NAME} Score Change'
+              type: DEPENDENT
+              key: 'securityscorecard.api.portfolio.primary.score.change[{#COMP_DOM}]'
+              delay: '0'
+              preprocessing:
+                -
+                  type: JSONPATH
+                  parameters:
+                    - $.entries
+                -
+                  type: JSONPATH
+                  parameters:
+                    - '$[?(@.["domain"] == ''{#COMP_DOM}'')].["score"].first()'
+                -
+                  type: SIMPLE_CHANGE
+                  parameters:
+                    - ''
+              master_item:
+                key: securityscorecard.api.portfolio.primary.data
+              tags:
+                -
+                  tag: SecurityScorecard
+                  value: Change
+                -
+                  tag: SecurityScorecard
+                  value: Primary
+                -
+                  tag: SecurityScorecard
+                  value: Score
+              trigger_prototypes:
+                -
+                  uuid: e47adefb5d0f41bca339d46b7906be07
+                  expression: 'last(/Security Scorecard API/securityscorecard.api.portfolio.primary.score.change[{#COMP_DOM}])<={$SECURITYSCORECARD_PRIMARY_ALERT_SCORE_DROP}'
+                  name: 'Security Scorecard Primary - {#COMP_NAME$} Dropped Points Greater than Threshold ({ITEM.LASTVALUE1} < {$SECURITYSCORECARD_PRIMARY_ALERT_SCORE_DROP})'
+                  opdata: '{ITEM.LASTVALUE1}'
+                  priority: WARNING
+                  manual_close: 'YES'
+                -
+                  uuid: 30c5b600a5904c0eb599ec28ecb9f3ab
+                  expression: 'last(/Security Scorecard API/securityscorecard.api.portfolio.primary.score.change[{#COMP_DOM}])<0'
+                  name: 'Security Scorecard Primary - {#COMP_NAME$} Score Dropped {ITEM.LASTVALUE1}'
+                  opdata: '{ITEM.LASTVALUE1}'
+                  priority: INFO
+                  manual_close: 'YES'
+            -
+              uuid: f54f5e633d0549ab9d1b6e29dbbf94f1
+              name: 'Primary Scorecard - {#COMP_NAME} Score'
+              type: DEPENDENT
+              key: 'securityscorecard.api.portfolio.primary.score[{#COMP_DOM}]'
+              delay: '0'
+              preprocessing:
+                -
+                  type: JSONPATH
+                  parameters:
+                    - $.entries
+                -
+                  type: JSONPATH
+                  parameters:
+                    - '$[?(@.["domain"] == ''{#COMP_DOM}'')].["score"].first()'
+              master_item:
+                key: securityscorecard.api.portfolio.primary.data
+              tags:
+                -
+                  tag: SecurityScorecard
+                  value: Primary
+                -
+                  tag: SecurityScorecard
+                  value: Score
+              trigger_prototypes:
+                -
+                  uuid: 87910284100c40ac9ff890d5b6a449ab
+                  expression: 'last(/Security Scorecard API/securityscorecard.api.portfolio.primary.score[{#COMP_DOM}])<{$SECURITYSCORECARD_PRIMARY_ALERT}'
+                  recovery_mode: RECOVERY_EXPRESSION
+                  recovery_expression: 'last(/Security Scorecard API/securityscorecard.api.portfolio.primary.score[{#COMP_DOM}])>={$SECURITYSCORECARD_PRIMARY_ALERT}'
+                  name: 'Security Scorecard - {#COMP_NAME$} Dropped Below Score Threshold  ({ITEM.LASTVALUE1} < {$SECURITYSCORECARD_PRIMARY_ALERT})'
+                  opdata: '{ITEM.LASTVALUE1}'
+                  priority: WARNING
+            -
+              uuid: a55641db0abb423185735b5baef201bf
+              name: 'Primary Scorecard - {#COMP_NAME} Services - Cloud Provider'
+              type: DEPENDENT
+              key: 'securityscorecard.api.portfolio.primary.service.cloud[{#COMP_DOM}]'
+              delay: '0'
+              trends: '0'
+              value_type: TEXT
+              preprocessing:
+                -
+                  type: JSONPATH
+                  parameters:
+                    - $.entries
+                -
+                  type: JSONPATH
+                  parameters:
+                    - '$[?(@.["categories"] =~ ''cloud'')].["vendor_domain"].first()'
+              master_item:
+                key: 'securityscorecard.api.portfolio.primary.services.data[{#COMP_DOM}]'
+              tags:
+                -
+                  tag: SecurityScorecard
+                  value: Primary
+                -
+                  tag: SecurityScorecard
+                  value: Services
+            -
+              uuid: 7df035ef0db046ab88dfae0abb224a75
+              name: 'Primary Scorecard - {#COMP_NAME} Services - Mail Provider'
+              type: DEPENDENT
+              key: 'securityscorecard.api.portfolio.primary.service.mail[{#COMP_DOM}]'
+              delay: '0'
+              trends: '0'
+              value_type: TEXT
+              preprocessing:
+                -
+                  type: JSONPATH
+                  parameters:
+                    - $.entries
+                -
+                  type: JSONPATH
+                  parameters:
+                    - '$[?(@.["categories"] =~ ''mail'')].["vendor_domain"].first()'
+              master_item:
+                key: 'securityscorecard.api.portfolio.primary.services.data[{#COMP_DOM}]'
+              tags:
+                -
+                  tag: SecurityScorecard
+                  value: Primary
+                -
+                  tag: SecurityScorecard
+                  value: Services
+            -
+              uuid: b9b68ecd403643578a91a8bfac0a63e9
+              name: 'Primary Scorecard - {#COMP_NAME} Services - NS Provider'
+              type: DEPENDENT
+              key: 'securityscorecard.api.portfolio.primary.service.ns[{#COMP_DOM}]'
+              delay: '0'
+              trends: '0'
+              value_type: TEXT
+              preprocessing:
+                -
+                  type: JSONPATH
+                  parameters:
+                    - $.entries
+                -
+                  type: JSONPATH
+                  parameters:
+                    - '$[?(@.["categories"] =~ ''nameserver'')].["vendor_domain"].first()'
+              master_item:
+                key: 'securityscorecard.api.portfolio.primary.services.data[{#COMP_DOM}]'
+              tags:
+                -
+                  tag: SecurityScorecard
+                  value: Primary
+                -
+                  tag: SecurityScorecard
+                  value: Services
+            -
+              uuid: fa040b17a7f94074bc054534308cad18
+              name: 'Primary Scorecard - {#COMP_NAME} Services - Registrar'
+              type: DEPENDENT
+              key: 'securityscorecard.api.portfolio.primary.service.registar[{#COMP_DOM}]'
+              delay: '0'
+              trends: '0'
+              value_type: TEXT
+              preprocessing:
+                -
+                  type: JSONPATH
+                  parameters:
+                    - $.entries
+                -
+                  type: JSONPATH
+                  parameters:
+                    - '$[?(@.["categories"] =~ ''registrar'')].["vendor_domain"].first()'
+              master_item:
+                key: 'securityscorecard.api.portfolio.primary.services.data[{#COMP_DOM}]'
+              tags:
+                -
+                  tag: SecurityScorecard
+                  value: Primary
+                -
+                  tag: SecurityScorecard
+                  value: Services
+            -
+              uuid: d927d5bf81084fa9bbf52856015d920e
+              name: 'securityscorecard.api.portfolio.primary.services.data[{#COMP_DOM}]'
+              type: HTTP_AGENT
+              key: 'securityscorecard.api.portfolio.primary.services.data[{#COMP_DOM}]'
+              delay: 1h
+              history: 1d
+              trends: '0'
+              value_type: TEXT
+              url: '{$SECURITYSCORECARD_URI}/companies/{#COMP_DOM}/services'
+              headers:
+                -
+                  name: Accept
+                  value: 'application/json; charset=utf-8'
+                -
+                  name: Authorization
+                  value: 'Token {$SECURITYSCORECARD_API}'
+              tags:
+                -
+                  tag: SecurityScorecard
+                  value: data
+                -
+                  tag: SecurityScorecard
+                  value: Primary
+                -
+                  tag: SecurityScorecard
+                  value: Services
+            -
+              uuid: ee1fb0abca7147c4a8c9650462053f0c
+              name: 'Primary Scorecard - {#COMP_NAME} Size'
+              type: DEPENDENT
+              key: 'securityscorecard.api.portfolio.primary.size[{#COMP_DOM}]'
+              delay: '0'
+              trends: '0'
+              value_type: TEXT
+              preprocessing:
+                -
+                  type: JSONPATH
+                  parameters:
+                    - $.entries
+                -
+                  type: JSONPATH
+                  parameters:
+                    - '$[?(@.["domain"] == ''{#COMP_DOM}'')].["size"].first()'
+              master_item:
+                key: securityscorecard.api.portfolio.primary.data
+              tags:
+                -
+                  tag: SecurityScorecard
+                  value: Primary
+          graph_prototypes:
+            -
+              uuid: ae2e6c20f867495092a936cbd233c719
+              name: 'Primary Scorecard - {#COMP_NAME} Score'
+              ymin_type_1: FIXED
+              ymax_type_1: FIXED
+              graph_items:
+                -
+                  sortorder: '1'
+                  color: 1A7C11
+                  item:
+                    host: 'Security Scorecard API'
+                    key: 'securityscorecard.api.portfolio.primary.score[{#COMP_DOM}]'
+                -
+                  sortorder: '2'
+                  color: F63100
+                  item:
+                    host: 'Security Scorecard API'
+                    key: securityscorecard.api.portfolio.primary.score.avg
+            -
+              uuid: c2628139f4024ed6bf9446c88ab15b39
+              name: 'Primary Scorecard - {#COMP_NAME} Score With Competitor Avg'
+              ymin_type_1: FIXED
+              ymax_type_1: FIXED
+              graph_items:
+                -
+                  sortorder: '1'
+                  color: 1A7C11
+                  item:
+                    host: 'Security Scorecard API'
+                    key: 'securityscorecard.api.portfolio.primary.score[{#COMP_DOM}]'
+                -
+                  sortorder: '2'
+                  color: F63100
+                  item:
+                    host: 'Security Scorecard API'
+                    key: securityscorecard.api.portfolio.primary.score.avg
+                -
+                  sortorder: '3'
+                  color: A54F10
+                  item:
+                    host: 'Security Scorecard API'
+                    key: securityscorecard.api.portfolio.competitor.score.avg
+          master_item:
+            key: securityscorecard.api.portfolio.primary.data
+          preprocessing:
+            -
+              type: STR_REPLACE
+              parameters:
+                - '"entries":'
+                - '"data":'
+            -
+              type: STR_REPLACE
+              parameters:
+                - '"domain"'
+                - '"{#COMP_DOM}"'
+            -
+              type: STR_REPLACE
+              parameters:
+                - '"name"'
+                - '"{#COMP_NAME}"'
+        -
+          uuid: 85f3c71ca28445fcaa160af991b25f22
+          name: securityscorecard.api.portfolio.vendor.discovery
+          type: DEPENDENT
+          key: securityscorecard.api.portfolio.vendor.discovery
+          delay: '0'
+          item_prototypes:
+            -
+              uuid: af808e1b81164319915945105c5994d0
+              name: 'Vendor Scorecard - {#COMP_NAME} Domain'
+              type: DEPENDENT
+              key: 'securityscorecard.api.portfolio.vendor.domain[{#COMP_DOM}]'
+              delay: '0'
+              trends: '0'
+              value_type: TEXT
+              preprocessing:
+                -
+                  type: JSONPATH
+                  parameters:
+                    - $.entries
+                -
+                  type: JSONPATH
+                  parameters:
+                    - '$[?(@.["domain"] == ''{#COMP_DOM}'')].["domain"].first()'
+              master_item:
+                key: securityscorecard.api.portfolio.vendor.data
+              tags:
+                -
+                  tag: SecurityScorecard
+                  value: Domain
+                -
+                  tag: SecurityScorecard
+                  value: Vendor
+            -
+              uuid: 7f9e357577f7423fae9c35642250baaa
+              name: 'Vendor Scorecard - {#COMP_NAME} Grade'
+              type: DEPENDENT
+              key: 'securityscorecard.api.portfolio.vendor.grade[{#COMP_DOM}]'
+              delay: '0'
+              trends: '0'
+              value_type: TEXT
+              preprocessing:
+                -
+                  type: JSONPATH
+                  parameters:
+                    - $.entries
+                -
+                  type: JSONPATH
+                  parameters:
+                    - '$[?(@.["domain"] == ''{#COMP_DOM}'')].["grade"].first()'
+              master_item:
+                key: securityscorecard.api.portfolio.vendor.data
+              tags:
+                -
+                  tag: SecurityScorecard
+                  value: Grade
+                -
+                  tag: SecurityScorecard
+                  value: Vendor
+            -
+              uuid: b415aae7bd19463d95f20dc0992d71f8
+              name: 'Vendor Scorecard - {#COMP_NAME} Industry'
+              type: DEPENDENT
+              key: 'securityscorecard.api.portfolio.vendor.industry[{#COMP_DOM}]'
+              delay: '0'
+              trends: '0'
+              value_type: TEXT
+              preprocessing:
+                -
+                  type: JSONPATH
+                  parameters:
+                    - $.entries
+                -
+                  type: JSONPATH
+                  parameters:
+                    - '$[?(@.["domain"] == ''{#COMP_DOM}'')].["industry"].first()'
+              master_item:
+                key: securityscorecard.api.portfolio.vendor.data
+              tags:
+                -
+                  tag: SecurityScorecard
+                  value: Vendor
+            -
+              uuid: 24ff4201fddc4c91828c0b84f57fdfbb
+              name: 'Vendor Scorecard - {#COMP_NAME} Score Change'
+              type: DEPENDENT
+              key: 'securityscorecard.api.portfolio.vendor.score.change[{#COMP_DOM}]'
+              delay: '0'
+              preprocessing:
+                -
+                  type: JSONPATH
+                  parameters:
+                    - $.entries
+                -
+                  type: JSONPATH
+                  parameters:
+                    - '$[?(@.["domain"] == ''{#COMP_DOM}'')].["score"].first()'
+                -
+                  type: SIMPLE_CHANGE
+                  parameters:
+                    - ''
+              master_item:
+                key: securityscorecard.api.portfolio.vendor.data
+              tags:
+                -
+                  tag: SecurityScorecard
+                  value: Change
+                -
+                  tag: SecurityScorecard
+                  value: Score
+                -
+                  tag: SecurityScorecard
+                  value: Vendor
+            -
+              uuid: 432f11ba3d1c4b06872fe00a0ec01406
+              name: 'Vendor Scorecard - {#COMP_NAME} Score'
+              type: DEPENDENT
+              key: 'securityscorecard.api.portfolio.vendor.score[{#COMP_DOM}]'
+              delay: '0'
+              preprocessing:
+                -
+                  type: JSONPATH
+                  parameters:
+                    - $.entries
+                -
+                  type: JSONPATH
+                  parameters:
+                    - '$[?(@.["domain"] == ''{#COMP_DOM}'')].["score"].first()'
+              master_item:
+                key: securityscorecard.api.portfolio.vendor.data
+              tags:
+                -
+                  tag: SecurityScorecard
+                  value: Score
+                -
+                  tag: SecurityScorecard
+                  value: Vendor
+            -
+              uuid: c81178b3712c4820ae52759d75f0d992
+              name: 'Vendor Scorecard - {#COMP_NAME} Services - Cloud Provider'
+              type: DEPENDENT
+              key: 'securityscorecard.api.portfolio.vendor.service.cloud[{#COMP_DOM}]'
+              delay: '0'
+              trends: '0'
+              value_type: TEXT
+              preprocessing:
+                -
+                  type: JSONPATH
+                  parameters:
+                    - $.entries
+                -
+                  type: JSONPATH
+                  parameters:
+                    - '$[?(@.["categories"] =~ ''cloud'')].["vendor_domain"].first()'
+              master_item:
+                key: 'securityscorecard.api.portfolio.vendor.services.data[{#COMP_DOM}]'
+              tags:
+                -
+                  tag: SecurityScorecard
+                  value: Services
+                -
+                  tag: SecurityScorecard
+                  value: Vendor
+            -
+              uuid: 3fb637eba6844e5aa8915c6bd8936f99
+              name: 'Vendor Scorecard - {#COMP_NAME} Services - Mail Provider'
+              type: DEPENDENT
+              key: 'securityscorecard.api.portfolio.vendor.service.mail[{#COMP_DOM}]'
+              delay: '0'
+              trends: '0'
+              value_type: TEXT
+              preprocessing:
+                -
+                  type: JSONPATH
+                  parameters:
+                    - $.entries
+                -
+                  type: JSONPATH
+                  parameters:
+                    - '$[?(@.["categories"] =~ ''mail'')].["vendor_domain"].first()'
+              master_item:
+                key: 'securityscorecard.api.portfolio.vendor.services.data[{#COMP_DOM}]'
+              tags:
+                -
+                  tag: SecurityScorecard
+                  value: Services
+                -
+                  tag: SecurityScorecard
+                  value: Vendor
+            -
+              uuid: b2e2611172d04f3d87d870dec53f21d1
+              name: 'Vendor Scorecard - {#COMP_NAME} Services - NS Provider'
+              type: DEPENDENT
+              key: 'securityscorecard.api.portfolio.vendor.service.ns[{#COMP_DOM}]'
+              delay: '0'
+              trends: '0'
+              value_type: TEXT
+              preprocessing:
+                -
+                  type: JSONPATH
+                  parameters:
+                    - $.entries
+                -
+                  type: JSONPATH
+                  parameters:
+                    - '$[?(@.["categories"] =~ ''nameserver'')].["vendor_domain"].first()'
+              master_item:
+                key: 'securityscorecard.api.portfolio.vendor.services.data[{#COMP_DOM}]'
+              tags:
+                -
+                  tag: SecurityScorecard
+                  value: Services
+                -
+                  tag: SecurityScorecard
+                  value: Vendor
+            -
+              uuid: 4206cd5a49d84ae7802386fa85d3d1ea
+              name: 'Vendor Scorecard - {#COMP_NAME} Services - Registrar'
+              type: DEPENDENT
+              key: 'securityscorecard.api.portfolio.vendor.service.registar[{#COMP_DOM}]'
+              delay: '0'
+              trends: '0'
+              value_type: TEXT
+              preprocessing:
+                -
+                  type: JSONPATH
+                  parameters:
+                    - $.entries
+                -
+                  type: JSONPATH
+                  parameters:
+                    - '$[?(@.["categories"] =~ ''registrar'')].["vendor_domain"].first()'
+              master_item:
+                key: 'securityscorecard.api.portfolio.vendor.services.data[{#COMP_DOM}]'
+              tags:
+                -
+                  tag: SecurityScorecard
+                  value: Services
+                -
+                  tag: SecurityScorecard
+                  value: Vendor
+            -
+              uuid: 7f5997b8e36347bc8855c55ccd86eca4
+              name: 'securityscorecard.api.portfolio.vendor.services.data[{#COMP_DOM}]'
+              type: HTTP_AGENT
+              key: 'securityscorecard.api.portfolio.vendor.services.data[{#COMP_DOM}]'
+              delay: 1h
+              history: 1d
+              trends: '0'
+              value_type: TEXT
+              url: '{$SECURITYSCORECARD_URI}/companies/{#COMP_DOM}/services'
+              follow_redirects: 'NO'
+              headers:
+                -
+                  name: Accept
+                  value: 'application/json; charset=utf-8'
+                -
+                  name: Authorization
+                  value: 'Token {$SECURITYSCORECARD_API}'
+              tags:
+                -
+                  tag: SecurityScorecard
+                  value: data
+                -
+                  tag: SecurityScorecard
+                  value: Services
+                -
+                  tag: SecurityScorecard
+                  value: Vendor
+            -
+              uuid: 40be8339f622444f8ef01e70ee8169d1
+              name: 'Vendor Scorecard - {#COMP_NAME} Size'
+              type: DEPENDENT
+              key: 'securityscorecard.api.portfolio.vendor.size[{#COMP_DOM}]'
+              delay: '0'
+              trends: '0'
+              value_type: TEXT
+              preprocessing:
+                -
+                  type: JSONPATH
+                  parameters:
+                    - $.entries
+                -
+                  type: JSONPATH
+                  parameters:
+                    - '$[?(@.["domain"] == ''{#COMP_DOM}'')].["size"].first()'
+              master_item:
+                key: securityscorecard.api.portfolio.vendor.data
+              tags:
+                -
+                  tag: SecurityScorecard
+                  value: Vendor
+          graph_prototypes:
+            -
+              uuid: 57f9cbb442c443fe952e273a840e6481
+              name: 'Vendor Scorecard - {#COMP_NAME} Score'
+              ymin_type_1: FIXED
+              ymax_type_1: FIXED
+              graph_items:
+                -
+                  sortorder: '1'
+                  color: 1A7C11
+                  item:
+                    host: 'Security Scorecard API'
+                    key: 'securityscorecard.api.portfolio.vendor.score[{#COMP_DOM}]'
+                -
+                  sortorder: '2'
+                  color: F63100
+                  item:
+                    host: 'Security Scorecard API'
+                    key: securityscorecard.api.portfolio.vendor.score.avg
+          master_item:
+            key: securityscorecard.api.portfolio.vendor.data
+          preprocessing:
+            -
+              type: STR_REPLACE
+              parameters:
+                - '"entries":'
+                - '"data":'
+            -
+              type: STR_REPLACE
+              parameters:
+                - '"domain"'
+                - '"{#COMP_DOM}"'
+            -
+              type: STR_REPLACE
+              parameters:
+                - '"name"'
+                - '"{#COMP_NAME}"'
+        -
+          uuid: ca27534f241842d2a8c4e49ff0a1b4a2
+          name: securityscorecard.api.portfolios.discovery
+          type: DEPENDENT
+          key: securityscorecard.api.portfolios.discovery
+          delay: '0'
+          item_prototypes:
+            -
+              uuid: 2c530ddb867b4316bcd69747eb9272db
+              name: 'Scorecard Portfolio - {#PORTFOLIO_NAME} - Created Date'
+              type: DEPENDENT
+              key: 'securityscorecard.api.portfolio.created_dtm[{#PORTFOLIO_ID}]'
+              delay: '0'
+              trends: '0'
+              value_type: TEXT
+              preprocessing:
+                -
+                  type: JSONPATH
+                  parameters:
+                    - $.entries
+                -
+                  type: JSONPATH
+                  parameters:
+                    - '$[?(@.["id"] == ''{#PORTFOLIO_ID}'')].["created_at"].first()'
+              master_item:
+                key: securityscorecard.api.portfolios.data
+              tags:
+                -
+                  tag: SecurityScorecard
+                  value: Portfolios
+            -
+              uuid: aa00382e25204a1d919771d44f56705d
+              name: 'Scorecard Portfolio - {#PORTFOLIO_NAME} - Description'
+              type: DEPENDENT
+              key: 'securityscorecard.api.portfolio.desc[{#PORTFOLIO_ID}]'
+              delay: '0'
+              trends: '0'
+              value_type: TEXT
+              description: |
+                entries[].description
+                
+                human-readable description
+              preprocessing:
+                -
+                  type: JSONPATH
+                  parameters:
+                    - $.entries
+                -
+                  type: JSONPATH
+                  parameters:
+                    - '$[?(@.["id"] == ''{#PORTFOLIO_ID}'')].["description"].first()'
+              master_item:
+                key: securityscorecard.api.portfolios.data
+              tags:
+                -
+                  tag: SecurityScorecard
+                  value: Portfolios
+            -
+              uuid: 20b6ae23a43547a2bb470edac6ece4bd
+              name: 'Scorecard Portfolio - {#PORTFOLIO_NAME} - ID'
+              type: DEPENDENT
+              key: 'securityscorecard.api.portfolio.id[{#PORTFOLIO_ID}]'
+              delay: '0'
+              trends: '0'
+              value_type: TEXT
+              description: |
+                entries[].id
+                
+                unique identifier
+              preprocessing:
+                -
+                  type: JSONPATH
+                  parameters:
+                    - $.entries
+                -
+                  type: JSONPATH
+                  parameters:
+                    - '$[?(@.["id"] == ''{#PORTFOLIO_ID}'')].["id"].first()'
+              master_item:
+                key: securityscorecard.api.portfolios.data
+              tags:
+                -
+                  tag: SecurityScorecard
+                  value: Portfolios
+            -
+              uuid: d2194a5cc73f4968b7849dcc9e207495
+              name: 'Scorecard Portfolio - {#PORTFOLIO_NAME} - Name'
+              type: DEPENDENT
+              key: 'securityscorecard.api.portfolio.name[{#PORTFOLIO_ID}]'
+              delay: '0'
+              trends: '0'
+              value_type: TEXT
+              description: |
+                entries[].name
+                
+                human-readable name
+              preprocessing:
+                -
+                  type: JSONPATH
+                  parameters:
+                    - $.entries
+                -
+                  type: JSONPATH
+                  parameters:
+                    - '$[?(@.["id"] == ''{#PORTFOLIO_ID}'')].["name"].first()'
+              master_item:
+                key: securityscorecard.api.portfolios.data
+              tags:
+                -
+                  tag: SecurityScorecard
+                  value: Portfolios
+            -
+              uuid: 8e3568e3c487455b8dbff0d927b2a573
+              name: 'Scorecard Portfolio - {#PORTFOLIO_NAME} - Privacy'
+              type: DEPENDENT
+              key: 'securityscorecard.api.portfolio.privacy[{#PORTFOLIO_ID}]'
+              delay: '0'
+              trends: '0'
+              value_type: TEXT
+              description: |
+                private: only visible to owner, 
+                shared: visible to the entire organization, 
+                team: group of users within an organization
+              preprocessing:
+                -
+                  type: JSONPATH
+                  parameters:
+                    - $.entries
+                -
+                  type: JSONPATH
+                  parameters:
+                    - '$[?(@.["id"] == ''{#PORTFOLIO_ID}'')].["privacy"].first()'
+              master_item:
+                key: securityscorecard.api.portfolios.data
+              tags:
+                -
+                  tag: SecurityScorecard
+                  value: Portfolios
+            -
+              uuid: 828ae6701318460083f35fcd4724df5a
+              name: 'Scorecard Portfolio - {#PORTFOLIO_NAME} - Read Only'
+              type: DEPENDENT
+              key: 'securityscorecard.api.portfolio.readonly[{#PORTFOLIO_ID}]'
+              delay: '0'
+              trends: '0'
+              value_type: TEXT
+              description: |
+                entries[].read_only
+                
+                indicates if the portfolio details (title, description, privacy) can be modified
+              preprocessing:
+                -
+                  type: JSONPATH
+                  parameters:
+                    - $.entries
+                -
+                  type: JSONPATH
+                  parameters:
+                    - '$[?(@.["id"] == ''{#PORTFOLIO_ID}'')].["read_only"].first()'
+              master_item:
+                key: securityscorecard.api.portfolios.data
+              tags:
+                -
+                  tag: SecurityScorecard
+                  value: Portfolios
+            -
+              uuid: 965b08e449ac444c892576a584d8dea3
+              name: 'securityscorecard.api.portfolios.companies[{#PORTFOLIO_ID}]'
+              type: HTTP_AGENT
+              key: 'securityscorecard.api.portfolios.companies[{#PORTFOLIO_ID}]'
+              delay: 1h
+              history: 1d
+              trends: '0'
+              value_type: TEXT
+              url: '{$SECURITYSCORECARD_URI}/portfolios/{#PORTFOLIO_ID}/companies'
+              headers:
+                -
+                  name: Accept
+                  value: 'application/json; charset=utf-8'
+                -
+                  name: Authorization
+                  value: 'Token {$SECURITYSCORECARD_API}'
+              tags:
+                -
+                  tag: SecurityScorecard
+                  value: data
+                -
+                  tag: SecurityScorecard
+                  value: Portfolios
+          master_item:
+            key: securityscorecard.api.portfolios.data
+          preprocessing:
+            -
+              type: STR_REPLACE
+              parameters:
+                - '"entries"'
+                - '"data"'
+            -
+              type: STR_REPLACE
+              parameters:
+                - '"id"'
+                - '"{#PORTFOLIO_ID}"'
+            -
+              type: STR_REPLACE
+              parameters:
+                - '"name"'
+                - '"{#PORTFOLIO_NAME}"'
+      httptests:
+        -
+          uuid: ba51a77e91c44156b64b919b299a545b
+          name: 'Security Scorecard API (Login)'
+          delay: 1h
+          steps:
+            -
+              name: 'Security Scorecard SAML Check'
+              url: '{$SECURITYSCORECARD_URI}/v1/saml/metadata/service-provider'
+              headers:
+                -
+                  name: Accept
+                  value: 'application/json; charset=utf-8'
+                -
+                  name: Authorization
+                  value: 'Token {$SECURITYSCORECARD_API}'
+              follow_redirects: 'NO'
+              required: OK
+              status_codes: '200'
+          tags:
+            -
+              tag: Application
+              value: API
+            -
+              tag: SecurityScorecard
+              value: API
+            -
+              tag: SecurityScorecard
+              value: SAML
+      tags:
+        -
+          tag: API
+          value: 'Security Scorecard'
+        -
+          tag: Application
+          value: API
+        -
+          tag: Application
+          value: 'Security Scorecard'
+      macros:
+        -
+          macro: '{$SECURITYSCORECARD_API}'
+          value: YOUR_API_KEY
+          description: 'Your Security Scorecard API Key'
+        -
+          macro: '{$SECURITYSCORECARD_COMP_ALERT}'
+          value: '10'
+          description: 'Warn if value drops below score (n) for companies in Competitor Portfolio'
+        -
+          macro: '{$SECURITYSCORECARD_PORTFOILIO_MONITOR_COMPETITOR}'
+          value: xxxxxxxxxxxxxxxxxx
+          description: 'The ID of the portfolio that you want to gather detailed results. This portfolio has your competitors.'
+        -
+          macro: '{$SECURITYSCORECARD_PORTFOILIO_MONITOR_PRIMARY}'
+          value: xxxxxxxxxxxxxxxxxx
+          description: 'The ID of the portfolio that you want to gather detailed results. This portfolio has your organizations.'
+        -
+          macro: '{$SECURITYSCORECARD_PORTFOILIO_MONITOR_VENDOR}'
+          value: xxxxxxxxxxxxxxxxxx
+          description: 'The ID of the portfolio that you want to gather detailed results. This portfolio has your vendors.'
+        -
+          macro: '{$SECURITYSCORECARD_PRIMARY_ALERT}'
+          value: '90'
+          description: 'Warn if value drops below score (n) for companies in Primary Portfolio'
+        -
+          macro: '{$SECURITYSCORECARD_PRIMARY_ALERT_SCORE_DROP}'
+          value: '-5'
+          description: 'Warn if value change drops below score (n) for companies in Primary Portfolio'
+        -
+          macro: '{$SECURITYSCORECARD_PRIMARY_AVG_ALERT}'
+          value: '70'
+          description: 'Warn if average value drops below score (n) for companies in Primary Portfolio'
+        -
+          macro: '{$SECURITYSCORECARD_PRIMARY_AVG_SCORE_DROP}'
+          value: '-5'
+          description: 'Warn if average value change drops below score (n) for companies in Primary Portfolio'
+        -
+          macro: '{$SECURITYSCORECARD_PRIMARY_PRCNT_COMP}'
+          value: '90'
+          description: 'Warn if primary average score compared to competitors drops below score (n) for companies in Primary Portfolio'
+        -
+          macro: '{$SECURITYSCORECARD_PRIMARY_PRCNT_INDUSTRY_ID}'
+          value: technology
+          description: 'Industry ID to compare {$SECURITYSCORECARD_PRIMARY_PRCNT_INDUSTRY}'
+        -
+          macro: '{$SECURITYSCORECARD_URI}'
+          value: 'https://api.securityscorecard.io'
+          description: 'Security Scorecard API URI Prefix (host)'
+        -
+          macro: '{$SECURITYSCORECARD_VEND_ALERT}'
+          value: '10'
+          description: 'Warn if value drops below score (n) for companies in Vendor Portfolio'
+      dashboards:
+        -
+          uuid: 216d7aa3aaeb406fb065d5b6aac1c8eb
+          name: 'Scorecard - Competitor Portfolio'
+          pages:
+            -
+              widgets:
+                -
+                  type: GRAPH_CLASSIC
+                  width: '12'
+                  height: '5'
+                  fields:
+                    -
+                      type: GRAPH
+                      name: graphid
+                      value:
+                        name: 'Primary Scorecard Average Score vs Competitor Scorecard Average Score'
+                        host: 'Security Scorecard API'
+                -
+                  type: GRAPH_PROTOTYPE
+                  'y': '5'
+                  width: '16'
+                  height: '5'
+                  fields:
+                    -
+                      type: GRAPH_PROTOTYPE
+                      name: graphid
+                      value:
+                        name: 'Competitor Scorecard - {#COMP_NAME} Score'
+                        host: 'Security Scorecard API'
+        -
+          uuid: ed2834d206944e57bdefc120ed2d728b
+          name: 'Scorecard - Primary Portfolio'
+          pages:
+            -
+              widgets:
+                -
+                  type: GRAPH_CLASSIC
+                  width: '16'
+                  height: '5'
+                  fields:
+                    -
+                      type: GRAPH
+                      name: graphid
+                      value:
+                        name: 'Primary Scorecard Average Score vs Competitor Scorecard Average Score'
+                        host: 'Security Scorecard API'
+                -
+                  type: GRAPH_PROTOTYPE
+                  'y': '5'
+                  width: '16'
+                  height: '5'
+                  fields:
+                    -
+                      type: INTEGER
+                      name: source_type
+                      value: '3'
+                    -
+                      type: ITEM_PROTOTYPE
+                      name: itemid
+                      value:
+                        key: 'securityscorecard.api.portfolio.primary.score[{#COMP_DOM}]'
+                        host: 'Security Scorecard API'
+                -
+                  type: GRAPH_PROTOTYPE
+                  'y': '10'
+                  width: '16'
+                  height: '5'
+                  fields:
+                    -
+                      type: INTEGER
+                      name: source_type
+                      value: '3'
+                    -
+                      type: ITEM_PROTOTYPE
+                      name: itemid
+                      value:
+                        key: 'securityscorecard.api.portfolio.primary.score[{#COMP_DOM}]'
+                        host: 'Security Scorecard API'
+        -
+          uuid: 64a6b011c8a14967ae452648cd21668a
+          name: 'Scorecard - Vendor'
+          pages:
+            -
+              widgets:
+                -
+                  type: GRAPH_PROTOTYPE
+                  width: '19'
+                  height: '16'
+                  fields:
+                    -
+                      type: INTEGER
+                      name: columns
+                      value: '3'
+                    -
+                      type: INTEGER
+                      name: rows
+                      value: '4'
+                    -
+                      type: INTEGER
+                      name: source_type
+                      value: '3'
+                    -
+                      type: ITEM_PROTOTYPE
+                      name: itemid
+                      value:
+                        key: 'securityscorecard.api.portfolio.vendor.score[{#COMP_DOM}]'
+                        host: 'Security Scorecard API'
+  graphs:
+    -
+      uuid: d553061e9ffb4cb5aeb5bbeb480a3398
+      name: 'Primary Scorecard Average Score vs Competitor Scorecard Average Score'
+      ymin_type_1: FIXED
+      graph_items:
+        -
+          sortorder: '1'
+          color: 1A7C11
+          item:
+            host: 'Security Scorecard API'
+            key: securityscorecard.api.portfolio.primary.score.avg
+        -
+          sortorder: '2'
+          color: F63100
+          item:
+            host: 'Security Scorecard API'
+            key: securityscorecard.api.portfolio.competitor.score.avg
+        -
+          sortorder: '3'
+          color: 2774A4
+          yaxisside: RIGHT
+          item:
+            host: 'Security Scorecard API'
+            key: securityscorecard.api.portfolio.primary.score.avg.prcntof.competitor
+    -
+      uuid: b708aab093764efaa276fdd151ce68dd
+      name: 'Scorecard Portfolios - Count'
+      ymin_type_1: FIXED
+      graph_items:
+        -
+          sortorder: '1'
+          color: 1A7C11
+          item:
+            host: 'Security Scorecard API'
+            key: securityscorecard.api.portfolio.count
+    -
+      uuid: 0d005ffe6ebc4f468d9f7a4beb3f7ef1
+      name: 'Scorecard Portolios - Monitored Count - Line'
+      ymin_type_1: FIXED
+      graph_items:
+        -
+          sortorder: '1'
+          color: 1A7C11
+          item:
+            host: 'Security Scorecard API'
+            key: securityscorecard.api.portfolio.competitor.count
+        -
+          sortorder: '2'
+          color: F63100
+          item:
+            host: 'Security Scorecard API'
+            key: securityscorecard.api.portfolio.primary.count
+        -
+          sortorder: '3'
+          color: 2774A4
+          item:
+            host: 'Security Scorecard API'
+            key: securityscorecard.api.portfolio.vendor.count
+    -
+      uuid: 9180052192d04bbfb2fe3c238130de63
+      name: 'Scorecard Portolios - Monitored Count - Stacked'
+      type: STACKED
+      ymin_type_1: FIXED
+      graph_items:
+        -
+          sortorder: '1'
+          color: 1A7C11
+          item:
+            host: 'Security Scorecard API'
+            key: securityscorecard.api.portfolio.competitor.count
+        -
+          sortorder: '2'
+          color: F63100
+          item:
+            host: 'Security Scorecard API'
+            key: securityscorecard.api.portfolio.primary.count
+        -
+          sortorder: '3'
+          color: 2774A4
+          item:
+            host: 'Security Scorecard API'
+            key: securityscorecard.api.portfolio.vendor.count
+    -
+      uuid: f7480b7aab5a4407a3960b1c3ae28eb6
+      name: 'Scorecard Scores Average'
+      ymin_type_1: FIXED
+      ymax_type_1: FIXED
+      graph_items:
+        -
+          sortorder: '1'
+          color: 1A7C11
+          item:
+            host: 'Security Scorecard API'
+            key: securityscorecard.api.portfolio.competitor.score.avg
+        -
+          sortorder: '2'
+          color: F63100
+          item:
+            host: 'Security Scorecard API'
+            key: securityscorecard.api.portfolio.primary.score.avg
+        -
+          sortorder: '3'
+          color: 2774A4
+          item:
+            host: 'Security Scorecard API'
+            key: securityscorecard.api.portfolio.vendor.score.avg
+    -
+      uuid: 13324741fde1422cb2aa526bd04bac60
+      name: 'Scorecard Scores Average Change'
+      graph_items:
+        -
+          sortorder: '1'
+          color: F63100
+          item:
+            host: 'Security Scorecard API'
+            key: securityscorecard.api.portfolio.competitor.score.avg.change
+        -
+          sortorder: '2'
+          color: 2774A4
+          item:
+            host: 'Security Scorecard API'
+            key: securityscorecard.api.portfolio.primary.score.avg.change
+        -
+          sortorder: '3'
+          color: A54F10
+          item:
+            host: 'Security Scorecard API'
+            key: securityscorecard.api.portfolio.vendor.score.avg.change
