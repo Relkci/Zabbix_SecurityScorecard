@@ -9,12 +9,27 @@ Zabbix Template for Security Scorecard to Monitor your organization, comeptitors
 - In Zabbix Import template
 - Create host, add agent interface
 - Assign template
-- Set inherited macros (API Key, Alert Thresholds)
+- Set inherited macros (API Key, URI) - Get these from www.securityscorecard.com
+  - {$SECURITYSCORECARD_API} 
+  - {$SECURITYSCORECARD_URI}
 - Initial data will take aproximately 2 hours to obtain with discovery rules.
 - After Discovery completes, search the items for "Security Scorecard Porfolio YOUR_PORTFOLIO_NAME - ID.
 - Copy the IDs for the portfolios containing your organizations, your competitors, and your vendors.
-- Updat the inherited macro's that specify the "primary" (your organizations), competitors, and vendors IDs.  
-- These will be used to obtain detailed stats for all the organizations within those portfolios.  Data is aggregated and compared to produce % of score across portfoliios.
+- Update the inherited macro's that specify the "primary" (your organizations), competitors, and vendors IDs.  
+  - {$SECURITYSCORECARD_PORTFOILIO_MONITOR_COMPETITOR} 
+  - {$SECURITYSCORECARD_PORTFOILIO_MONITOR_PRIMARY}
+  - {$SECURITYSCORECARD_PORTFOILIO_MONITOR_VENDOR}
+  - These will be used to obtain detailed stats for all the organizations within those portfolios.  Data is aggregated and compared to produce % of score across portfoliios.
+ - Update Trigger Threshold Macros
+   - {$SECURITYSCORECARD_COMP_ALERT}
+   - {$SECURITYSCORECARD_PRIMARY_ALERT}
+   - {$SECURITYSCORECARD_PRIMARY_ALERT_SCORE_DROP}
+   - {$SECURITYSCORECARD_PRIMARY_AVG_ALERT}
+   - {$SECURITYSCORECARD_PRIMARY_AVG_SCORE_DROP}
+   - {$SECURITYSCORECARD_PRIMARY_PRCNT_COMP}
+   - {$SECURITYSCORECARD_VEND_ALERT}
+ - Update Primary Industry Refernce (FUTURE DEVELOPMENT)
+   - {$SECURITYSCORECARD_PRIMARY_PRCNT_INDUSTRY_ID} 
 
 # Features
 - Retrieves Profile IDS
